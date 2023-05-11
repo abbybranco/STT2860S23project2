@@ -1,7 +1,7 @@
 # Script to read, tidy, and save Powerball numbers data
-# Authors: 
+# Authors: Abigail Branco, Cat Tinsley
 # Created: 2023-04-24
-# Updated: xxxx-xx-xx
+# Updated: 2023-05-11
 
 # --------------------------------------------------
 # packages
@@ -21,7 +21,7 @@ library(tidyverse)
 # name of the file you are reading in.
 # x---------------------------------------x
 
-powerball <- PUT CODE TO READ THE DATA HERE %>%
+powerball <- "data_raw/powerballdata.xslx" %>%
   rename(
     drawdate = `Draw Date`,
     numbers = `Winning Numbers`,
@@ -53,7 +53,7 @@ powerball_tidy <- powerball %>%
     w5 = as.numeric(w5),
     powerball = as.numeric(powerball)
   ) %>% 
-  PUT CODE TO PIVOT THE DATASET HERE
+  pivot_longer(cols = c(w1, w2, w3, w4, w5, powerball), names_to = "Powerball")
   
 # -------------------------------------------------------
 # write tidied dataset to data_tidy folder
@@ -66,3 +66,4 @@ powerball_tidy <- powerball %>%
 # the file path. Just use "data_tidy/".
 # x---------------------------------------x
 
+write_csv(powerballdata, "data_tidy/powerballdata.xlsx")

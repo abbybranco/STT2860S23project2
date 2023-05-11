@@ -1,6 +1,6 @@
 ---
 title: "Final Presentation"
-author: "Author: Jill E. Thomley"
+author: "Author: Jill E. Thomley" #Change to my name
 date: "`r format(Sys.time(), '%B %d, %Y @ %I:%M %p')`"
 output: ioslides_presentation
 ---
@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 ```
 
 ## Packages Used
+
+**What packages and why?**
 
 I used tidyverse for data manipulation and plotting.
 
@@ -35,6 +37,8 @@ library(scales)
 ```
 
 ## Capital Punishment Dataset
+
+**Describe dataset and talk about variables**
 
 I compiled my dataset using several sources found at the web site of the nonprofit [Death Penalty Information Center](https://deathpenaltyinfo.org/). The dataset was last updated January 7, 2022, so some of the values may have changed between that date and now. 
 

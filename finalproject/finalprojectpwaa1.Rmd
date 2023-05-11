@@ -1,0 +1,214 @@
+---
+title: "Final Presentation"
+author: "Author: Abigail Branco"
+date: "`r format(Sys.time(), '%B %d, %Y @ %I:%M %p')`"
+output: ioslides_presentation
+---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, # hide all the code
+  message = FALSE,
+  warning = FALSE,
+  comment = NA
+  )
+```
+
+## Packages Used
+
+I used **tidyverse/dplyr** for data manipulation and other quality of life functions.
+
+```{r, echo = TRUE}
+library(tidyverse)
+```
+
+I used **ggplot2** to create the plots.
+
+```{r, echo = TRUE}
+library(ggplot2)
+```
+
+I used **skimr** to examine the data.
+
+```{r, echo = TRUE}
+library(skimr)
+```
+
+I used **grid** and **png** to add photos to the graphs. 
+
+```{r, echo = TRUE}
+library(grid)
+library(png)
+```
+
+```{r, include = FALSE}
+phoenixpng <- readPNG("point.png")
+edgeworthpng <- readPNG("edgeworth.png")
+gantpng <- readPNG("gant.png")
+karmapng <- readPNG("karma.png")
+lanapng <- readPNG("lana.png")
+paynepng <- readPNG("payne.png")
+logopng <- readPNG("objection.png")
+```
+
+
+## Ace Attorney 1 Transcript Dataset
+
+This dataset contains the transcript for the first Ace Attorney game. Ace Attorney is a visual novel/point and click game series developed by Capcom, and you play as a newbie lawyer who finds his defendants not guilty by picking apart the prosecution's witnesses and solving the case through contradictions in their testimony. The first game was released in 2001 for the GBA but has since been re-released on a ton of modern consoles.
+
+I chose this dataset partly because my partner is going through a playthrough right now so I thought it would be fun, and partly because I thought it was really funny that someone bothered to type out and upload the 12,000 lines of dialogue in this game to Kaggle. 
+
+## Variables in the Dataset
+
+**via Kaggle:**
+
+* `Episode`: one of the game's five cases
+* `Chapter`: the various chapters within an episode
+* `Index`: the placement of the dialogue within a chapter
+* `Name`: the name of the character speaking
+* `Text`: the actual dialogue
+
+##
+
+**I joined:**
+
+I also joined some variables to perform additional operations. These are:
+
+* `Order`: Puts the variable chapters in order rather than starting over at 1 every episode
+* `Status`: Categorizes the major court characters into either the defense's side or the prosecution's
+
+
+```{r}
+aa1 <- read_csv("PW_AA1.csv")
+trial <- read_csv("trials.csv")
+order <- read_csv("order.csv")
+```
+
+```{r}
+joinaa1 <- aa1 %>%
+  inner_join(trial, by = c("Name", "Episode"))
+
+finalaa1 <- joinaa1 %>%
+  inner_join(order, by = c("Episode", "Chapter"))
+```
+
+```{r, include = FALSE}
+skim(finalaa1)
+```
+
+
+```{r, include = FALSE}
+finalaa1 %>%
+  count(Text, Name) %>%
+  arrange(desc(n)) %>%
+  slice_head(n=10)
+```
+
+## Objection!Plot
+
+```{r, fig.align = "center", fig.width = 7, fig.height= 5, fig}
+objectionplot <- aa1 %>%
+  filter(Text == "Objection.gif") %>%
+  ggplot(aes(factor(Name, level=c('Phoenix', 'Lana', 'Gant', 'Payne', 'Karma', 'Edgeworth')))) +
+  geom_bar(aes(fill = Name), color = "black") +
+  annotation_custom(rasterGrob(phoenixpng, width = 3, height = 3),
+                    xmin = 1.2, xmax = 1.8,
+                    ymin = 87, ymax = 95) +
+  ylim(0,100) +
+  annotation_custom(rasterGrob(lanapng, width = 3, height = 3),
+                    xmin = 1.7, xmax = 2.3,
+                    ymin = 12, ymax = 20) +
+  annotation_custom(rasterGrob(gantpng, width = 3, height = 3),
+                    xmin = 2.8, xmax = 3.2,
+                    ymin = 11, ymax = 18) +
+  annotation_custom(rasterGrob(paynepng, width = 3, height = 3),
+                    xmin = 3, xmax = 3.8,
+                    ymin = 11, ymax = 22) +
+  annotation_custom(rasterGrob(karmapng, width = 3, height = 3),
+                    xmin = 4.4, xmax = 5,
+                    ymin = 60, ymax = 69) +
+  annotation_custom(rasterGrob(edgeworthpng, width = 3, height = 3),
+                    xmin = 5.2, xmax = 6,
+                    ymin = 93, ymax = 99) +
+  annotation_custom(rasterGrob(logopng, width = 4, height = 4),
+                    xmin = 2.5, xmax = 3,
+                    ymin = 60, ymax = 70) +
+  labs(title = "Number of Objections per character",
+       y = "# of Objections",
+       x = "Character") +
+  scale_fill_manual(values = c("violetred3", "goldenrod", "steelblue", "tan", "slategrey", "royalblue3"))
+
+objectionplot 
+```
+
+
+## Objection!Plot
+
+```{r, fig.align = "right", fig.width = 7.55, fig.height = 5}
+objection2plot <- aa1 %>%
+  filter(Text == "Objection.gif") %>%
+  ggplot(aes(factor(Name, level=c('Phoenix', 'Lana', 'Gant', 'Payne', 'Karma', 'Edgeworth')))) +
+  geom_bar(aes(fill = Episode), color = "black") +
+  annotation_custom(rasterGrob(phoenixpng, width = 3, height = 3),
+                    xmin = 1.2, xmax = 1.8,
+                    ymin = 87, ymax = 95) +
+  ylim(0,100) +
+  annotation_custom(rasterGrob(lanapng, width = 3, height = 3),
+                    xmin = 1.7, xmax = 2.3,
+                    ymin = 12, ymax = 20) +
+  annotation_custom(rasterGrob(gantpng, width = 3, height = 3),
+                    xmin = 2.8, xmax = 3.2,
+                    ymin = 11, ymax = 18) +
+  annotation_custom(rasterGrob(paynepng, width = 3, height = 3),
+                    xmin = 3, xmax = 3.8,
+                    ymin = 11, ymax = 22) +
+  annotation_custom(rasterGrob(karmapng, width = 3, height = 3),
+                    xmin = 4.4, xmax = 5,
+                    ymin = 60, ymax = 69) +
+  annotation_custom(rasterGrob(edgeworthpng, width = 3, height = 3),
+                    xmin = 5.2, xmax = 6,
+                    ymin = 93, ymax = 99) +
+  annotation_custom(rasterGrob(logopng, width = 4, height = 4),
+                    xmin = 2.5, xmax = 3,
+                    ymin = 60, ymax = 70) +
+  labs(title = "Number of Objections per character",
+       y = "# of Objections",
+       x = "Character")
+
+objection2plot 
+```
+
+## Text Per Trial plot
+
+```{r, fig.align = "center", fig.width = 7, fig.height = 5}
+grouped <- finalaa1 %>%
+  group_by(Order, Status)
+
+sumgroup <- grouped %>%
+  summarize(Talk = mean(Index), .groups = "keep")
+
+sumgroup %>%
+  filter(Order %in% c(1, 3, 5, 7, 9, 11, 13, 15, 16, 17)) %>%
+  ggplot(aes(Order, Talk, color = Status)) + 
+  geom_line(linewidth = 3) +
+  geom_point(size = 3) +
+  scale_color_manual(values = c("royalblue3", "violetred3")) +
+  annotate("rect", xmin = .5, xmax = 1.2, 
+           ymin = 0, ymax = 350, fill = "yellowgreen", alpha = .2) +
+  annotate("rect", xmin = 1.2, xmax = 5.2, 
+           ymin = 0, ymax = 350, fill = "purple", alpha = .2) +
+  annotate("rect", xmin = 5.2, xmax = 11.2, 
+           ymin = 0, ymax = 350, fill = "skyblue3", alpha = .2) +
+  annotate("rect", xmin = 11.2, xmax = 17, 
+           ymin = 0, ymax = 350, fill = "green", alpha = .2) +
+  annotate("label", x = 1.3, y = 40, color = "yellowgreen", label = "The First\n Turnabout") +
+  annotate("label", x = 3.3, y = 100, color = "purple", label = "Turnabout\n Sisters") +
+  annotate("label", x = 8, y = 100, color = "skyblue", label = "Turnabout\n Samurai") +
+  annotate("label", x = 14, y = 100, color = "darkgreen", label = "Turnabout\n Goodbyes") +
+  labs(title = "Average amount of text in trials",
+       x = "Chapter (in game order)",
+       y = "Average # of dialogue lines")
+```
+
+
+
